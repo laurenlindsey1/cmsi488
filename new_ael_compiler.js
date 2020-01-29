@@ -26,8 +26,8 @@ const aelGrammar = ohm.grammar(`Ael {
             | Factor
   Factor    = "-" Primary      --negate
             | Primary
-  Exponentiated = Primary "**" Primary --exponentiation               
   Primary   = "(" Exp ")"      --parens
+            | Primary "**" Primary --exponentiation 
             | number
             | id
   number    = digit+
@@ -50,7 +50,7 @@ const semantics = aelGrammar.createSemantics().addOperation('exec', {
   Term_divide(t, _op, f) { return t.eval() / f.eval(); },
   Factor_negate(_op, p) { return -p.eval(); },
   Primary_parens(_open, e, _close) { return e.eval(); },
-  Exponentiated_exponentiation(t, _op, f){return t.eval() ** f.value()},
+  Primary_exponentiation(p0, _op, p1){return p0.eval() ** p1.eval();},
   number(_chars) { return +this.sourceString; }, // ohm means this is the number that is being created + turns a string to a number 
   id(_firstChar, _restChars) { 
       if(!memory.has(this.sourceString)) {
