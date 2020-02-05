@@ -16,25 +16,19 @@ const ohm = require('ohm-js');
 
 const aelGrammar = ohm.grammar(`Ael {
   Program = (Statement ";")+
-  Statement = id "=" Exp       --assign
-            | print Exp        --print
-  Exp       = Exp "+" Term     --plus
-            | Exp "-" Term     --minus
+  Statement = id "=" Exp               --assign
+            | print Exp                --print
+  Exp       = Exp ("+" | "-") Term     --binary
             | Term
-  Term      = Term "*" Factor  --times
-            | Term "/" Factor  --divide
+  Term      = Term ("*"| "/") Factor   --binary
             | Factor
-  Factor    = "-" Expo      --negate
-            | Expo
-  Expo      = Primary "**" Primary --exponentiation
+  Factor    = "-" Primary              --negate
             | Primary
-  Primary   = "(" Exp ")"      --parens
+  Primary   = "(" Exp ")"              --parens
             | number
             | id
-
   number    = digit+
   print     = "print" ~alnum
-  while     = "while" Exp "{" Statement+ "}"
   id        = ~print letter alnum*
 }`);
 
@@ -87,13 +81,6 @@ class Identifier {
   }
 }
 
-class WhileStatement {
-	constructor(expression, statement) {
-		this.expression = expression;
-		this.statement = statement;
-  }
-}
-
 // -----------------------------------------------------------------------------
 // PARSER
 //
@@ -107,7 +94,6 @@ const astBuilder = aelGrammar.createSemantics().addOperation('ast', {
   Program(body, _semicolons) { return new Program(body.ast()); },
   Statement_assign(id, _, expression) { return new Assignment(id.sourceString, expression.ast()); },
   Statement_print(_, expression) { return new PrintStatement(expression.ast()); },
-	Statement_while(_, expression, statement) { return new WhileStatement(expression.ast(), statement.ast()); },
   Exp_binary(left, op, right) { return new BinaryExp(left.ast(), op.sourceString, right.ast()); },
   Term_binary(left, op, right) { return new BinaryExp(left.ast(), op.sourceString, right.ast()); },
   Factor_negate(_op, operand) { return new UnaryExp('-', operand.ast()); },
@@ -149,9 +135,6 @@ Object.assign(Assignment.prototype, {
 Object.assign(PrintStatement.prototype, {
   check(context) { this.expression.check(context); },
 });
-Object.assign(WhileStatement.prototype, {
-  check(context) { this.expression.check(context); this.statement.check(context);},
-});
 Object.assign(BinaryExp.prototype, {
   check(context) { this.left.check(context); this.right.check(context); },
 });
@@ -190,9 +173,6 @@ generators.javascript = () => {
   Object.assign(PrintStatement.prototype, {
     gen() { return `console.log(${this.expression.gen()};`; },
   });
-	Object.assign(WhileStatement.prototype, {
-    gen() { return `while(${this.expression.gen()}) {${this.statement.gen()}}`; },
-  });
   Object.assign(BinaryExp.prototype, {
     gen() { return `(${this.left.gen()} ${this.op} ${this.right.gen()})`; },
   });
@@ -224,13 +204,10 @@ int main() {
   Object.assign(PrintStatement.prototype, {
     gen() { return `printf("%d\\n", ${this.expression.gen()});`; },
   });
-	Object.assign(WhileStatement.prototype, {
-    gen() { return `while(${this.expression.gen()}) {${this.statement.gen()}}`; },
-  });
 };
 
 generators.stack = () => {
-  const ops = { '+': 'ADD', '-': 'SUB', '*': 'MUL', '/': 'DIV', '**': 'EXP' }; // MAYBE EXP MAYBE NOT?
+  const ops = { '+': 'ADD', '-': 'SUB', '*': 'MUL', '/': 'DIV' };
 
   const instructions = [];
   function emit(instruction) { instructions.push(instruction); }
@@ -243,11 +220,6 @@ generators.stack = () => {
   });
   Object.assign(PrintStatement.prototype, {
     gen() { this.expression.gen(); emit('OUTPUT'); },
-  });
-	Object.assign(WhileStatement.prototype, { // UM this isn't right
-    gen() { while(this.expression.gen()){
-			this.statement.gen();
-		}
   });
   Object.assign(BinaryExp.prototype, {
     gen() { this.left.gen(); this.right.gen(); emit(ops[this.op]); },
