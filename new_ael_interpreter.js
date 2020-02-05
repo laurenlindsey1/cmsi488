@@ -31,8 +31,10 @@ const aelGrammar = ohm.grammar(`Ael {
   Primary   = "(" Exp ")"      --parens
             | number
             | id
+  
   number    = digit+
   print     = "print" ~alnum
+  while     = Exp "{" Statement+ "}"
   id        = ~print letter alnum*
 }`);
 
