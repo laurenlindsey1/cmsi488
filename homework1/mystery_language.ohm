@@ -1,0 +1,21 @@
+Program = Dec* Exp
+Dec = "func" id "(" (id("," id)*)? ")" (Exp ";")+ end
+Exp = numlit
+	| strlit
+	| id
+	| "(" Exp ")"
+	| id "(" (Exp("," Exp)*)? ")"
+	| Exp1 "?" Exp1 ":" Exp
+	| Exp1
+Exp1 = Exp1 ("+" | "-") Exp2
+Exp2 = Exp2 ("*" | "/") Exp3
+	| Exp3
+Exp3 = "-" Exp4
+	| Exp4
+Exp4 = Exp5 "!"
+numlit = digit+ (("."digit+)? | (digit+"/"digit+)?) ("^"digit+)?
+strlit = "\"" (~"\\" ~"\"" ~"\n" ~"\u{hex hex? hex? hex? hex? hex?}" any)* "\""
+hex = 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | A | B | C | D | E
+id = ~func ~end (letter | "$") (alnum | "$" | "_")*  // and not hex?
+end = "end"
+comment = "--" (~"\n" any)*
