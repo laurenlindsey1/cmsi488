@@ -26,7 +26,7 @@ const aelGrammar = ohm.grammar(`Ael {
             | Factor
   Factor    = "-" Expo      --negate
             | Expo
-  Expo      = Primary "**" Primary --exponentiation
+  Expo      = Primary "**" Expo --exponentiation
             | Primary
   Primary   = "(" Exp ")"      --parens
             | number

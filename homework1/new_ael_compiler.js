@@ -26,7 +26,7 @@ const aelGrammar = ohm.grammar(`Ael {
             | Factor
   Factor    = "-" Expo      --negate
             | Expo
-  Expo      = Primary "**" Primary --exponentiation
+  Expo      = Primary "**" Expo --exponentiation
             | Primary
   Primary   = "(" Exp ")"      --parens
             | number
@@ -224,9 +224,6 @@ int main() {
   Object.assign(PrintStatement.prototype, {
     gen() { return `printf("%d\\n", ${this.expression.gen()});`; },
   });
-	Object.assign(WhileStatement.prototype, {
-    gen() { return `while(${this.expression.gen()}) {${this.statement.gen()}}`; },
-  });
 };
 
 generators.stack = () => {
@@ -247,8 +244,11 @@ generators.stack = () => {
 	Object.assign(WhileStatement.prototype, { // UM this isn't right
     gen() { while(this.expression.gen()){
 			this.statement.gen();
+			emit('LABEL L1'); emit
 		}
   });
+	// LABEL L1
+	// Create new instruction JZ L2 (jump if zero) and LABEL L1 (condition for while loop)
   Object.assign(BinaryExp.prototype, {
     gen() { this.left.gen(); this.right.gen(); emit(ops[this.op]); },
   });
