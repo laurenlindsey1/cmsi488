@@ -282,7 +282,7 @@ generators.stack = () => {
     '*': 'MUL',
     '/': 'DIV',
     '**': 'EXP'
-  }; // MAYBE EXP MAYBE NOT?
+  };
   const instructions = [];
 
   function emit(instruction) {
