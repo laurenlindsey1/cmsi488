@@ -110,6 +110,9 @@ const astBuilder = aelGrammar.createSemantics().addOperation('ast', {
   While_loop(_, _a, expression, _b, _c, statement, _d, _e) {
     return new WhileStatement(expression.ast(), statement.ast());
   },
+  Expo_exponentiation(left, op, right) {
+    return new BinaryExp(left.ast(), op.sourceString, right.ast());
+  },
   Exp_binary(left, op, right) {
     return new BinaryExp(left.ast(), op.sourceString, right.ast());
   },
