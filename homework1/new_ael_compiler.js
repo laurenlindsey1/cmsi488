@@ -246,6 +246,7 @@ generators.stack = () => {
 			this.statement.gen();
 			emit('LABEL L1'); emit
 		}
+		}
   });
 	// LABEL L1
 	// Create new instruction JZ L2 (jump if zero) and LABEL L1 (condition for while loop)
