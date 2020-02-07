@@ -11,4 +11,6 @@ Nothing can be said about the associativity of the not operator since associativ
 ### e. Why do you think the negation operator was given a lower precedence than multiplication?
 Although the precedence of negation in comparison to multiplication does not affect the answer produced, giving negation higher precedence would allow the programmer to write x*-y which would lead to their expectation being allowed to write x+-y and x--y which would be incorrect. Being able to write x--y would be understood by the compiler as x and then a comment containing the string y instead of x-(-y). This grammar forces the programmer to put parentheses around the negation when doing math operations.
 ### f. Give an abstract syntax tree for the expression -8 * 5.
+![](photos/3f.jpg)
 ### g. Suppose the grammar were changed by dropping the negation from Exp2 and adding - Exp5 to Exp4. Give the abstract syntax tree for the expression -8 * 5 according to the new grammar.
+![](photos/3g.jpg)

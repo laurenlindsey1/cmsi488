@@ -5,24 +5,20 @@
 //   $ node ael-compiler.js --target=C 'print 42;'
 //   $ node ael-compiler.js --target=JavaScript 'print 42;'
 //   $ node ael-compiler.js --target=Stack 'print 42;'
-
 const ohm = require('ohm-js');
-
 // -----------------------------------------------------------------------------
 // GRAMMAR
 //
 // We just specify it as a string and give it to Ohm.
 // -----------------------------------------------------------------------------
-
 const aelGrammar = ohm.grammar(`Ael {
   Program = (Statement ";")+
   Statement = id "=" Exp       --assign
             | print Exp        --print
-  Exp       = Exp "+" Term     --plus
-            | Exp "-" Term     --minus
+            | While
+  Exp       = Exp ("+" | "-") Term  --binary
             | Term
-  Term      = Term "*" Factor  --times
-            | Term "/" Factor  --divide
+  Term      = Term ("*" | "/") Factor  --binary
             | Factor
   Factor    = "-" Expo      --negate
             | Expo
@@ -31,69 +27,68 @@ const aelGrammar = ohm.grammar(`Ael {
   Primary   = "(" Exp ")"      --parens
             | number
             | id
-
+  While     = "while" "(" Exp ")""{" Statement+ ";" "}" --loop
   number    = digit+
   print     = "print" ~alnum
-  while     = "while" Exp "{" Statement+ "}"
   id        = ~print letter alnum*
 }`);
-
 // -----------------------------------------------------------------------------
 // ABSTRACT SYNTAX TREE DEFINITION
 //
 // One class for each kind of AST Node. All we need here are constructors.
 // Other phases of the compiler will add methods later.
 // -----------------------------------------------------------------------------
-
 class Program {
   constructor(body) {
     this.body = body;
   }
 }
-
 class Assignment {
   constructor(id, expression) {
-    Object.assign(this, { id, expression });
+    Object.assign(this, {
+      id,
+      expression
+    });
   }
 }
-
 class PrintStatement {
   constructor(expression) {
     this.expression = expression;
   }
 }
-
 class BinaryExp {
   constructor(left, op, right) {
-    Object.assign(this, { left, op, right });
+    Object.assign(this, {
+      left,
+      op,
+      right
+    });
   }
 }
-
 class UnaryExp {
   constructor(op, operand) {
-    Object.assign(this, { op, operand });
+    Object.assign(this, {
+      op,
+      operand
+    });
   }
 }
-
 class NumericLiteral {
   constructor(value) {
     this.value = value;
   }
 }
-
 class Identifier {
   constructor(value) {
     this.value = value;
   }
 }
-
 class WhileStatement {
-	constructor(expression, statement) {
-		this.expression = expression;
-		this.statement = statement;
+  constructor(expression, statement) {
+    this.expression = expression;
+    this.statement = statement;
   }
 }
-
 // -----------------------------------------------------------------------------
 // PARSER
 //
@@ -102,18 +97,40 @@ class WhileStatement {
 // "AST Builder" whose operation is called ast. Then, for fun, I added a parse
 // function which hides the use of Ohm from the rest of the compiler.
 // -----------------------------------------------------------------------------
-
 const astBuilder = aelGrammar.createSemantics().addOperation('ast', {
-  Program(body, _semicolons) { return new Program(body.ast()); },
-  Statement_assign(id, _, expression) { return new Assignment(id.sourceString, expression.ast()); },
-  Statement_print(_, expression) { return new PrintStatement(expression.ast()); },
-	Statement_while(_, expression, statement) { return new WhileStatement(expression.ast(), statement.ast()); },
-  Exp_binary(left, op, right) { return new BinaryExp(left.ast(), op.sourceString, right.ast()); },
-  Term_binary(left, op, right) { return new BinaryExp(left.ast(), op.sourceString, right.ast()); },
-  Factor_negate(_op, operand) { return new UnaryExp('-', operand.ast()); },
-  Primary_parens(_open, expression, _close) { return expression.ast(); },
-  number(_chars) { return new NumericLiteral(+this.sourceString); },
-  id(_firstChar, _restChars) { return new Identifier(this.sourceString); },
+  Program(body, _semicolons) {
+    return new Program(body.ast());
+  },
+  Statement_assign(id, _, expression) {
+    return new Assignment(id.sourceString, expression.ast());
+  },
+  Statement_print(_, expression) {
+    return new PrintStatement(expression.ast());
+  },
+  While_loop(_, _a, expression, _b, _c, statement, _d, _e) {
+    return new WhileStatement(expression.ast(), statement.ast());
+  },
+  Expo_exponentiation(left, op, right) {
+    return new BinaryExp(left.ast(), op.sourceString, right.ast());
+  },
+  Exp_binary(left, op, right) {
+    return new BinaryExp(left.ast(), op.sourceString, right.ast());
+  },
+  Term_binary(left, op, right) {
+    return new BinaryExp(left.ast(), op.sourceString, right.ast());
+  },
+  Factor_negate(_op, operand) {
+    return new UnaryExp('-', operand.ast());
+  },
+  Primary_parens(_open, expression, _close) {
+    return expression.ast();
+  },
+  number(_chars) {
+    return new NumericLiteral(+this.sourceString);
+  },
+  id(_firstChar, _restChars) {
+    return new Identifier(this.sourceString);
+  },
 });
 
 function parse(sourceCode) {
@@ -123,7 +140,6 @@ function parse(sourceCode) {
   }
   return astBuilder(match).ast();
 }
-
 // -----------------------------------------------------------------------------
 // STATIC SEMANTIC CHECKER
 //
@@ -139,27 +155,45 @@ function parse(sourceCode) {
 //
 //     parse(source).check().gen()
 // -----------------------------------------------------------------------------
-
 Object.assign(Program.prototype, {
-  check() { const context = new Set(); this.body.forEach(s => s.check(context)); return this; },
+  check() {
+    const context = new Set();
+    this.body.forEach(s => s.check(context));
+    return this;
+  },
 });
 Object.assign(Assignment.prototype, {
-  check(context) { this.expression.check(context); context.add(this.id); },
+  check(context) {
+    this.expression.check(context);
+    context.add(this.id);
+  },
 });
 Object.assign(PrintStatement.prototype, {
-  check(context) { this.expression.check(context); },
+  check(context) {
+    this.expression.check(context);
+  },
 });
 Object.assign(WhileStatement.prototype, {
-  check(context) { this.expression.check(context); this.statement.check(context);},
+  check(context) {
+    this.expression.check(context);
+    this.statement.forEach(s => s.check(context));
+  },
 });
 Object.assign(BinaryExp.prototype, {
-  check(context) { this.left.check(context); this.right.check(context); },
+  check(context) {
+    this.left.check(context);
+    this.right.check(context);
+  },
 });
 Object.assign(UnaryExp.prototype, {
-  check(context) { this.operand.check(context); },
+  check(context) {
+    this.operand.check(context);
+  },
 });
 Object.assign(NumericLiteral.prototype, {
-  check() { /* Always fine */ },
+  check() {
+    /* Always fine */
+  },
 });
 Object.assign(Identifier.prototype, {
   check(context) {
@@ -168,7 +202,6 @@ Object.assign(Identifier.prototype, {
     }
   },
 });
-
 // -----------------------------------------------------------------------------
 // CODE GENERATOR(S)
 //
@@ -177,36 +210,49 @@ Object.assign(Identifier.prototype, {
 // compiler writing, but also to show off some concerns in compiler writing,
 // like retargetability.
 // -----------------------------------------------------------------------------
-
 const generators = {};
-
 generators.javascript = () => {
   Object.assign(Program.prototype, {
-    gen() { return this.body.map(s => s.gen()).join('\n'); },
+    gen() {
+      return this.body.map(s => s.gen()).join('\n');
+    },
   });
   Object.assign(Assignment.prototype, {
-    gen() { return `let ${this.id} = ${this.expression.gen()};`; },
+    gen() {
+      return `let ${this.id} = ${this.expression.gen()};`;
+    },
   });
   Object.assign(PrintStatement.prototype, {
-    gen() { return `console.log(${this.expression.gen()};`; },
+    gen() {
+      return `console.log(${this.expression.gen()};`;
+    },
   });
-	Object.assign(WhileStatement.prototype, {
-    gen() { return `while(${this.expression.gen()}) {${this.statement.gen()}}`; },
+  Object.assign(WhileStatement.prototype, {
+    gen() {
+      return `while(${this.expression.gen()}) {${this.statement.gen()}}`;
+    },
   });
   Object.assign(BinaryExp.prototype, {
-    gen() { return `(${this.left.gen()} ${this.op} ${this.right.gen()})`; },
+    gen() {
+      return `(${this.left.gen()} ${this.op} ${this.right.gen()})`;
+    },
   });
   Object.assign(UnaryExp.prototype, {
-    gen() { return `(${this.op} ${this.operand.gen()})`; },
+    gen() {
+      return `(${this.op} ${this.operand.gen()})`;
+    },
   });
   Object.assign(NumericLiteral.prototype, {
-    gen() { return this.value; },
+    gen() {
+      return this.value;
+    },
   });
   Object.assign(Identifier.prototype, {
-    gen() { return this.value; },
+    gen() {
+      return this.value;
+    },
   });
 };
-
 generators.c = () => {
   generators.javascript();
   Object.assign(Program.prototype, {
@@ -219,55 +265,84 @@ int main() {
     },
   });
   Object.assign(Assignment.prototype, {
-    gen() { return `int ${this.id} = ${this.expression.gen()};`; },
+    gen() {
+      return `int ${this.id} = ${this.expression.gen()};`;
+    },
   });
   Object.assign(PrintStatement.prototype, {
-    gen() { return `printf("%d\\n", ${this.expression.gen()});`; },
+    gen() {
+      return `printf("%d\\n", ${this.expression.gen()});`;
+    },
   });
 };
-
 generators.stack = () => {
-  const ops = { '+': 'ADD', '-': 'SUB', '*': 'MUL', '/': 'DIV', '**': 'EXP' }; // MAYBE EXP MAYBE NOT?
-
+  const ops = {
+    '+': 'ADD',
+    '-': 'SUB',
+    '*': 'MUL',
+    '/': 'DIV',
+    '**': 'EXP'
+  }; // MAYBE EXP MAYBE NOT?
   const instructions = [];
-  function emit(instruction) { instructions.push(instruction); }
 
+  function emit(instruction) {
+    instructions.push(instruction);
+  }
   Object.assign(Program.prototype, {
-    gen() { this.body.forEach(s => s.gen()); return instructions.join('\n'); },
+    gen() {
+      this.body.forEach(s => s.gen());
+      return instructions.join('\n');
+    },
   });
   Object.assign(Assignment.prototype, {
-    gen() { this.expression.gen(); emit(`STORE ${this.id}`); },
+    gen() {
+      this.expression.gen();
+      emit(`STORE ${this.id}`);
+    },
   });
   Object.assign(PrintStatement.prototype, {
-    gen() { this.expression.gen(); emit('OUTPUT'); },
+    gen() {
+      this.expression.gen();
+      emit('OUTPUT');
+    },
   });
-	Object.assign(WhileStatement.prototype, { // UM this isn't right
-    gen() { while(this.expression.gen()){
-			this.statement.gen();
-			emit('LABEL L1'); emit
-		}
-		}
+  Object.assign(WhileStatement.prototype, {
+    gen() {
+      emit('LABEL L1');
+      this.expression.gen();
+      emit('JZ L2');
+      this.statement.forEach(s => s.gen());
+      emit('JUMP L1');
+      emit('LABEL L2');
+    }
   });
-	// LABEL L1
-	// Create new instruction JZ L2 (jump if zero) and LABEL L1 (condition for while loop)
   Object.assign(BinaryExp.prototype, {
-    gen() { this.left.gen(); this.right.gen(); emit(ops[this.op]); },
+    gen() {
+      this.left.gen();
+      this.right.gen();
+      emit(ops[this.op]);
+    },
   });
   Object.assign(UnaryExp.prototype, {
-    gen() { this.operand.gen(); emit('NEG'); },
+    gen() {
+      this.operand.gen();
+      emit('NEG');
+    },
   });
   Object.assign(NumericLiteral.prototype, {
-    gen() { emit(`PUSH ${this.value}`); },
+    gen() {
+      emit(`PUSH ${this.value}`);
+    },
   });
   Object.assign(Identifier.prototype, {
-    gen() { emit(`LOAD ${this.value}`); },
+    gen() {
+      emit(`LOAD ${this.value}`);
+    },
   });
 };
-
 // -----------------------------------------------------------------------------
 // RUNNING THE COMPILER ON THE COMMAND LINE
 // -----------------------------------------------------------------------------
-
 if (process.argv.length !== 4 || !['-C', '-JavaScript', '-Stack'].includes(process.argv[2])) {
   console.error('Syntax: node ael-compiler.js -<C|JavaScript|Stack> program');
   process.exitCode = 1;
