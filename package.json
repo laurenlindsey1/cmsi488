@@ -1,0 +1,27 @@
+{
+  "name": "cmsi488",
+  "version": "1.0.0",
+  "description": "",
+  "main": "new_ael_interpreter.js",
+  "scripts": {
+    "test": "jest"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/laurenlindsey1/cmsi488.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/laurenlindsey1/cmsi488/issues"
+  },
+  "homepage": "https://github.com/laurenlindsey1/cmsi488#readme",
+  "dependencies": {
+    "request": "^2.88.2",
+    "request-promise": "^4.2.5"
+  },
+  "devDependencies": {
+    "eslint": "^6.8.0",
+    "jest": "^25.1.0"
+  }
+}
