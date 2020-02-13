@@ -6,14 +6,8 @@
 //   2
 //   12
 
-
-// use ohm js library
 const ohm = require('ohm-js');
 
-// uses grammar module can take multiline string representing a grammar
-
-// the -- things on the right hand side are not comments later on you will see this come up as Statement_assign for example
-// you need this to tag them dont need to tag the base cases
 const aelGrammar = ohm.grammar(`Ael {
   Program = (Statement ";")+
   Statement = id "=" Exp       --assign
@@ -40,8 +34,6 @@ const aelGrammar = ohm.grammar(`Ael {
 
 const memory = new Map();
 
-// This language is so simple, we don't need an AST.
-// abstract syntax tree below
 const semantics = aelGrammar.createSemantics().addOperation('exec', {
   Program(ss, _semicolons) { ss.exec(); },
   Statement_assign(i, _eq, e) { memory.set(i.sourceString, e.eval()); },
@@ -61,12 +53,8 @@ const semantics = aelGrammar.createSemantics().addOperation('exec', {
       }
       return memory.get(this.sourceString);
     },
-}); // this second parameter is an object that is passed in and you dont need properties key value pairs because function syntax
-// exp_plus : function (shit) {}
-// this is an object with 8 functions as it parses it fires each of the functions off its like post order traversal without ordering yourself
+});
 
-
-// parse by checking the match function otherwise throw an error
 const match = aelGrammar.match(process.argv[2]);
 if (match.succeeded()) {
   semantics(match).exec();
@@ -74,21 +62,3 @@ if (match.succeeded()) {
   console.error(match.message);
   process.exitCode = 1;
 }
-
-// npm init
-// npm install ohm.js
-
-// $ node ael-interpreter.js '8 *    (22   - 3) / 4'
-// 38
-// $ node ael-interpreter.js '8 * (22 ^  - 3) / 4'
-// Line 1, col 9:
-// > 1 | 8 * (22 ^  - 3) / 4
-//               ^
-// Expected ")"
-// $ node ael-interpreter.js '8 ('
-// Line 1, col 3:
-// > 1 | 8 (
-//         ^
-// Expected end of input
-
-// get third party library from npm
