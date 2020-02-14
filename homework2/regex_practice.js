@@ -13,10 +13,7 @@ function isEightThroughTwentyNine(s){
   return /^[8-9]|[12]\d$/.test(s);
 }
 function isMLComment(s){
-  // need help with escape 
-let g = /^\((\*)\*\)$/.test(s);
-return /^\((\*)[^g]*\*\)$/.test(s);
-
+  return /^\(\*(?!\*\)).\*\)$/.test(s);
 }
 
 
