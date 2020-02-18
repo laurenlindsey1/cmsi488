@@ -1,5 +1,5 @@
 const assert = require('assert');
-const r = require('../regex_practice');
+const r = require('../regex_practice/regex_practice');
 
 const FIXTURE = {
   isCanadianPostalCode: {
