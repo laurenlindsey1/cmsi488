@@ -1,6 +1,6 @@
 const assert = require('assert');
-const r = require('../regex_practice/regex_practice');
-
+const regex_functions = require('../regex_practice');
+const ohm_matching_functions = require('../ohm_practice');
 const FIXTURE = {
   isCanadianPostalCode: {
     good: ['A7X 2P8', 'P8E 4R2'],
@@ -23,11 +23,11 @@ const FIXTURE = {
     bad: ['fOo', 'gOO'],
   },
   isDivisibleBy64: {
-    good: ['0','1101000000'],
+    good: ['0', '1101000000', '000000', '0001000000'],
     bad: ['1', '00000000100000', '1000000001'],
   },
   isEightThroughTwentyNine: {
-    good: Array(22).fill(0).map((x, i) => i + 8),
+    good: (Array(22).fill(0).map((x, i) => i + 8)
     bad: ['3', '-0', '00009', 'dog', '361'],
   },
   isMLComment: {
@@ -39,21 +39,25 @@ const FIXTURE = {
     bad: ['dog', 'door'],
   },
 };
-
 // Looks funny, but you can probably figure out what it does
 FIXTURE.isNotDOgDoorDenWithLookAround = FIXTURE.isNotDOgDoorDenNoLookAround;
-
-  Object.entries(r).forEach(([name, matchingFunction]) => {
-    describe(`the function ${name}`, () => {
-      FIXTURE[name].good.forEach((s) => {
-        it(`accepts ${s}`, () => {
-          assert.ok(matchingFunction(s));
+function runTests(suiteName, suite) {
+  describe(`In the ${suiteName} tester`, () => {
+    Object.entries(suite).forEach(([name, matchingFunction]) => {
+      describe(`the function ${name}`, () => {
+        FIXTURE[name].good.forEach(s => {
+          it(`accepts ${s}`, () => {
+            assert.ok(matchingFunction(s));
+          });
         });
-      });
-      FIXTURE[name].bad.forEach((s) => {
-        it(`rejects ${s}`, () => {
-          assert.ok(!matchingFunction(s));
+        FIXTURE[name].bad.forEach(s => {
+          it(`rejects ${s}`, () => {
+            assert.ok(!matchingFunction(s));
+          });
         });
       });
     });
   });
+}
+runTests('regex', regex_functions);
+runTests('ohm', ohm_matching_functions);
