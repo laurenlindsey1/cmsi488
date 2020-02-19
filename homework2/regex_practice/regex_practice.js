@@ -19,5 +19,9 @@ function isNotThreeEndingInOO(s){
   return /^([\w](?![oO][oO]))*$/.test(s);
 }
 
+function isDivisibleBy64(s){
+  return /^((0+)|([01]*10{6}))$/.test(s);
+}
 
-module.exports = {isCanadianPostalCode, isVisa, isMasterCard, isEightThroughTwentyNine, isMLComment, isNotThreeEndingInOO};
+
+module.exports = {isCanadianPostalCode, isVisa, isMasterCard, isEightThroughTwentyNine, isMLComment, isNotThreeEndingInOO, isDivisibleBy64};
