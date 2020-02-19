@@ -11,7 +11,8 @@ function isEightThroughTwentyNine(s){
   return /^[8-9]|[12]\d$/.test(s);
 }
 function isMLComment(s){
-  return /^\(\*(?!\*\)).\*\)$/.test(s);
+  return /^\(\*(?!\*\)).*\*\)$/.test(s);
+  // return /^\(\*(?!\*\))\*\)$/.test(s);
 }
 
 
