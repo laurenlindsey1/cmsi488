@@ -15,6 +15,8 @@ function isMLComment(s){
   // return /^\(\*(?!\*\))\*\)$/.test(s);
 }
 
+// TOAL TO CHECK 
+
 function isNotThreeEndingInOO(s){
   return /^([\w](?![oO][oO]))*$/.test(s);
 }
@@ -24,7 +26,7 @@ function isDivisibleBy64(s){
 }
 
 function isNotDOgDoorDenNoLookAround(s){
-  return /^[^d]*|d[^(eo)]*|do[^g]|doo[^r]*|door(\w+)|dog(\w+)|do[^(go)]*|de[^n]*|den(\w+)$/.test(s);
+  return /^(([^d](\w*))*|d[^(eo)]*|do[^g]|doo[^r]*|door(\w+)|dog(\w+)|do[^(go)]*|de[^n]*|den(\w+))$/.test(s);
 }
 
 function isAdaFloat(s){
