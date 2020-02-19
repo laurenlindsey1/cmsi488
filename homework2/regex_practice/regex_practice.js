@@ -15,5 +15,9 @@ function isMLComment(s){
   // return /^\(\*(?!\*\))\*\)$/.test(s);
 }
 
+function isNotThreeEndingInOO(s){
+  return /^([\w](?![oO][oO]))*$/.test(s);
+}
 
-module.exports = {isCanadianPostalCode, isVisa, isMasterCard, isEightThroughTwentyNine, isMLComment};
+
+module.exports = {isCanadianPostalCode, isVisa, isMasterCard, isEightThroughTwentyNine, isMLComment, isNotThreeEndingInOO};
