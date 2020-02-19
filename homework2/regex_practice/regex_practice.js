@@ -24,7 +24,7 @@ function isDivisibleBy64(s){
 }
 
 function isNotDOgDoorDenNoLookAround(s){
-  return /^[^d]* | do([^(g)] | (o([^r])*)) | d([^(eo)])* | de([^n]*)$/.test(s);
+  return /^[^d]*|d[^(eo)]*|do[^g]|doo[^r]*|door(\w+)|dog(\w+)|do[^(go)]*|de[^n]*|den(\w+)$/.test(s);
 }
 
 function isAdaFloat(s){
