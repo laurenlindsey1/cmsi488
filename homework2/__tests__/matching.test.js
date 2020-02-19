@@ -26,17 +26,17 @@ const FIXTURE = {
     good: ['0', '1101000000', '000000', '0001000000'],
     bad: ['1', '00000000100000', '1000000001'],
   },
-  // isEightThroughTwentyNine: {
-  //   good: (Array(22).fill(0).map((x, i) => i + 8),
-  //   bad: ['3', '-0', '00009', 'dog', '361'],
-  // },
+  isEightThroughTwentyNine: {
+    good: (Array(22).fill(0).map((x, i) => i + 8)),
+    bad: ['3', '-0', '00009', 'dog', '361'],
+  },
   isMLComment: {
     good: ['(**)', '(*  *)', '(*756****)'],
     bad: ['', '(*)', '(* before (* inner *) after *)'],
   },
   isNotDOgDoorDenNoLookAround: {
     good: ['', 'dogs', 'doors', 'do', 'hotdog'],
-    bad: ['dog', 'door'],
+    bad: ['dog', 'door', 'den'],
   },
 };
 // Looks funny, but you can probably figure out what it does
