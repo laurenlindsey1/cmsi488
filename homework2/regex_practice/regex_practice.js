@@ -12,7 +12,6 @@ function isEightThroughTwentyNine(s){
 }
 function isMLComment(s){
   return /^\(\*(\*(?!\))|[^\*])*\*\)$/.test(s);
-  // return /^\(\*(?!\*\))\*\)$/.test(s);
 }
 
 // TOAL TO CHECK 
@@ -29,10 +28,14 @@ function isNotDOgDoorDenNoLookAround(s){
   return /^(([^d](\w*))*|d[^(eo)]*|do[^g]|doo[^r]*|door(\w+)|dog(\w+)|do[^(go)]*|de[^n]*|den(\w+))$/.test(s);
 }
 
+function isNotDOgDoorDenWithLookAround(s) {
+  return /^(([^d](\w*))*|do(?![og])*|dog\w+|doo(?![r])*|door\w+|d(?![oe])*|de(?!n)*|den\w+)$/.test(s);
+}
+
 function isAdaFloat(s){
   return /^((\d+(_\d+)*#((\d|[a-fA-F])+(_?(\d|[a-fA-F]))*(\.(\d|[a-fA-F])(_(\d|[a-fA-F]))*)?#([eE]\+?(\d+(_\d+)*)|[eE]-(\d+(_\d+)*))?))|((\d+(_\d+)*(\.\d+(_\d+)*)?)([eE]\+?(\d+(_\d+)*)|[eE]-(\d+(_\d+)*))?))$/.test(s);
 }
 
 
 
-module.exports = {isCanadianPostalCode, isVisa, isMasterCard, isEightThroughTwentyNine, isMLComment, isNotThreeEndingInOO, isDivisibleBy64, isAdaFloat, isNotDOgDoorDenNoLookAround};
+module.exports = {isCanadianPostalCode, isVisa, isMasterCard, isEightThroughTwentyNine, isMLComment, isNotThreeEndingInOO, isDivisibleBy64, isAdaFloat, isNotDOgDoorDenNoLookAround, isNotDOgDoorDenWithLookAround};
