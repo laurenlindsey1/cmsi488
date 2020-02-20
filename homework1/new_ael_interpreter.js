@@ -12,6 +12,8 @@ const aelGrammar = ohm.grammar(`Ael {
   Program = (Statement ";")+
   Statement = id "=" Exp       --assign
             | print Exp        --print
+            | while Exp "{" Block "}"  --while
+  Block     = Statement+ 
   Exp       = Exp "+" Term     --plus
             | Exp "-" Term     --minus
             | Term
@@ -28,7 +30,7 @@ const aelGrammar = ohm.grammar(`Ael {
 
   number    = digit+
   print     = "print" ~alnum
-  while     = "while" Exp "{" Statement+ "}"
+  while     = "while" ~alnum 
   id        = ~print letter alnum*
 }`);
 
@@ -38,6 +40,11 @@ const semantics = aelGrammar.createSemantics().addOperation('exec', {
   Program(ss, _semicolons) { ss.exec(); },
   Statement_assign(i, _eq, e) { memory.set(i.sourceString, e.eval()); },
   Statement_print(_, e) { console.log(e.eval()); },
+  Statement_while(_while, e, _open, body, _close ){
+    while(e.eval()){
+      body.exec();
+    }
+  }
 }).addOperation('eval', {
   Exp_plus(e, _op, t) { return e.eval() + t.eval(); }, // need to include but just include you can ignore them with leading _
   Exp_minus(e, _op, t) { return e.eval() - t.eval(); },
