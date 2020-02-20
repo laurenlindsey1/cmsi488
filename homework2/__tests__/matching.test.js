@@ -1,6 +1,6 @@
 const assert = require('assert');
 const regex_functions = require('../regex_practice/regex_practice');
-// const ohm_matching_functions = require('../ohm_practice/index');
+const ohm_matching_functions = require('../ohm_practice/index');
 const FIXTURE = {
   isCanadianPostalCode: {
     good: ['A7X 2P8', 'P8E 4R2'],
@@ -60,4 +60,4 @@ function runTests(suiteName, suite) {
   });
 }
 runTests('regex', regex_functions);
-// runTests('ohm', ohm_matching_functions);
+runTests('ohm', ohm_matching_functions);
