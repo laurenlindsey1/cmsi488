@@ -15,7 +15,7 @@ function isMLComment(s){
 }
 
 function isNotThreeEndingInOO(s){
-  return /^([A-Z](?!oo$))*$/i.test(s);
+  return /^(^(?![A-Z]oo$)[A-Z]*)$/i.test(s);
 }
 
 function isDivisibleBy64(s){

@@ -3,8 +3,8 @@ const regex_functions = require('../regex_practice/regex_practice');
 const ohm_matching_functions = require('../ohm_practice/index');
 const FIXTURE = {
   isCanadianPostalCode: {
-    good: ['A7X 2P8', 'P8E 4R2'],
-    bad: ['A7X   9B2', 'C7E9U2', '', 'Dog'],
+    good: ['A7X 2P8', 'P8E 4R2', 'K1A 0B1', 'L4U 9Z0', 'H0H 0H0', 'G3N 3M0'],
+    bad: ['A7X   9B2', 'C7E9U2', '', 'Dog', 'DF87R', 'P8E P8E', 'ARE ARE', 'A8A 999'],
   },
   isVisa: {
     good: ['4128976567772613', '4089655522138888', '4696969696969'],
@@ -20,8 +20,8 @@ const FIXTURE = {
     bad: ['dog', '4fe', 'p#ii#', '_', '_33', '5__2', '9#88#E-1e3', '-6', '3#XY#', '23#E'],
   },
   isNotThreeEndingInOO: {
-    good: ['', 'fog', 'Tho'],
-    bad: ['fOo', 'gOO'],
+    good: ['', 'fog', 'Tho', 'food', 'oo', 'OO', 'oO', 'hooo'],
+    bad: ['fOo', 'gOO', 'roo'],
   },
   isDivisibleBy64: {
     good: ['0', '1101000000', '000000', '0001000000', '1000000', '1111111111000000', '0000'],
