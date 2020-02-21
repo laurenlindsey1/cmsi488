@@ -2,7 +2,9 @@ const ohm = require("ohm-js");
 
 function isCanadianPostalCode(s) {
     const grammar = ohm.grammar(`CPC {
-        c = "A" .. "Z" digit "A" .. "Z" space digit"A" .. "Z" digit
+        c = firstletter digit secondletter space digit secondletter digit
+        firstletter = "A" | "B" | "C" | "E" | "G" | "H" | "J" .. "N" | "P" | "R" | "S" | "T" | "V" | "X" | "Y"
+        secondletter = "A" | "B" | "C" | "E" | "G" | "H" | "J" .. "N" | "P" | "R" | "S" | "T" | "V" .. "Z"
     }`);
     return grammar.match(s).succeeded();
 }
@@ -16,6 +18,7 @@ function isVisa(s) {
     return grammar.match(s).succeeded();
 }
 
+//FIX
 function isMasterCard(s) {
     const grammar = ohm.grammar(`isMastercard {
         c = "5" short d d d d d d d d d d d d d d
@@ -48,5 +51,24 @@ function isEightThroughTwentyNine(s){
   return grammar.match(s).succeeded();
 }
 
+function isMLComment(s) {
+    const grammar = ohm.grammar(`mlComment {
+        comment = "(*"  middle*  "*)"
+        middle = "*" ~")" | ~"*" any
+    }`);
+    return grammar.match(s).succeeded();
+}
+
+function isNotThreeEndingInOO(s) {
+    const grammar = ohm.grammar(`notThreeEndingInOO {
+        string =  (morethanthree | threeletters | lessthanthree)?
+        morethanthree = any any any any any*
+        lessthanthree = any? any?
+        threeletters = any ~lettero any any
+        lettero = caseInsensitive<"oo">
+}`);
+    return grammar.match(s).succeeded();
+}
+
 module.exports = {isCanadianPostalCode, isVisa, isMasterCard, isDivisibleBy64,
-   isEightThroughTwentyNine};
+   isEightThroughTwentyNine, isMLComment, isNotThreeEndingInOO};

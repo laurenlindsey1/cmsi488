@@ -3,8 +3,8 @@ const regex_functions = require('../regex_practice/regex_practice');
 const ohm_matching_functions = require('../ohm_practice/index');
 const FIXTURE = {
   isCanadianPostalCode: {
-    good: ['A7X 2P8', 'P8E 4R2', 'K1A 0B1', 'L4U 9Z0', 'H0H 0H0', 'G3N 3M0'],
-    bad: ['A7X   9B2', 'C7E9U2', '', 'Dog', 'DF87R', 'P8E P8E', 'ARE ARE', 'A8A 999'],
+    good: ['A7X 2P8', 'P8E 4R2', 'K1A 0B1', 'H0H 0H0', 'G3N 3M0'],
+    bad: ['A7X   9B2', 'C7E9U2', '', 'Dog', 'DF87R', 'P8E P8E', 'ARE ARE', 'A8A 999', 'L4U 9Z0', 'H0H 0Q0', 'W8S 8F8'],
   },
   isVisa: {
     good: ['4128976567772613', '4089655522138888', '4696969696969'],
