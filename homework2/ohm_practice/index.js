@@ -1,35 +1,39 @@
 const ohm = require("ohm-js");
 
 function isCanadianPostalCode(s) {
-    const grammar = ohm.grammar(`CPC {
-        c = firstletter digit secondletter space digit secondletter digit
+  const grammar = ohm.grammar(`CPC {
+        c = firstletter digit secondletter " " digit secondletter digit
         firstletter = "A" | "B" | "C" | "E" | "G" | "H" | "J" .. "N" | "P" | "R" | "S" | "T" | "V" | "X" | "Y"
         secondletter = "A" | "B" | "C" | "E" | "G" | "H" | "J" .. "N" | "P" | "R" | "S" | "T" | "V" .. "Z"
     }`);
-    return grammar.match(s).succeeded();
+  return grammar.match(s).succeeded();
 }
 
 function isVisa(s) {
-    const grammar = ohm.grammar(`isVisa {
+  const grammar = ohm.grammar(`isVisa {
         c = "4" d d d d d d d d d d d d d d d --fifteen
         | "4" d d d d d d d d d d d d --twelve
         d = digit
     }`);
-    return grammar.match(s).succeeded();
+  return grammar.match(s).succeeded();
 }
 
 //FIX
 function isMasterCard(s) {
-    const grammar = ohm.grammar(`isMastercard {
-        c = "5" short d d d d d d d d d d d d d d
-        short = "1" | "2" | "3" | "4" |"5"
+  const grammar = ohm.grammar(`isMastercard {
+        card = "5" "1".."5" d d d12     --fives
+         | "222" "1".."9" d12       --range2221_2229
+         | "22" "3".."9" d d12      --range2230_2299
+         | "2" "3".."6" d d d12     --range2300_2699
+         | "27" "0".."1" d d12    --range2700_2719
+         | "2720" d12               --range2720
+        d12 = d d d d d d d d d d d d
         d = digit
     }`);
-    return grammar.match(s).succeeded();
+  return grammar.match(s).succeeded();
 }
 
-
-function isDivisibleBy64(s){
+function isDivisibleBy64(s) {
   const grammar = ohm.grammar(`divBy64 {
       bin = numbers
             | zeroes
@@ -42,7 +46,7 @@ function isDivisibleBy64(s){
   return grammar.match(s).succeeded();
 }
 
-function isEightThroughTwentyNine(s){
+function isEightThroughTwentyNine(s) {
   const grammar = ohm.grammar(`eightToTwentyNine {
       start = single | double
       single = "8" | "9"
@@ -52,23 +56,31 @@ function isEightThroughTwentyNine(s){
 }
 
 function isMLComment(s) {
-    const grammar = ohm.grammar(`mlComment {
+  const grammar = ohm.grammar(`mlComment {
         comment = "(*"  middle*  "*)"
         middle = "*" ~")" | ~"*" any
     }`);
-    return grammar.match(s).succeeded();
+  return grammar.match(s).succeeded();
 }
 
 function isNotThreeEndingInOO(s) {
-    const grammar = ohm.grammar(`notThreeEndingInOO {
+  const grammar = ohm.grammar(`notThreeEndingInOO {
         string =  (morethanthree | threeletters | lessthanthree)?
-        morethanthree = any any any any any*
-        lessthanthree = any? any?
-        threeletters = any ~lettero any any
+        morethanthree = letter letter letter letter letter*
+        lessthanthree = letter? letter?
+        threeletters = letter ~lettero letter letter
         lettero = caseInsensitive<"oo">
+        
 }`);
-    return grammar.match(s).succeeded();
+  return grammar.match(s).succeeded();
 }
 
-module.exports = {isCanadianPostalCode, isVisa, isMasterCard, isDivisibleBy64,
-   isEightThroughTwentyNine, isMLComment, isNotThreeEndingInOO};
+module.exports = {
+  isCanadianPostalCode,
+  isVisa,
+  isMasterCard,
+  isDivisibleBy64,
+  isEightThroughTwentyNine,
+  isMLComment,
+  isNotThreeEndingInOO
+};
