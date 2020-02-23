@@ -33,25 +33,12 @@ function isMasterCard(s) {
   return grammar.match(s).succeeded();
 }
 
-function isDivisibleBy64(s) {
-  const grammar = ohm.grammar(`divBy64 {
-      bin = numbers
-            | zeroes
-      zeroes = "0" zeroes --many_zeroes
-              | "0"
-      numbers = "1" "0" "0" "0" "0" "0" "0" --ending
-            | "0" numbers --preceding_zero
-            | "1" numbers --preceding_one
-  }`);
-  return grammar.match(s).succeeded();
-}
-
 function isEightThroughTwentyNine(s) {
   const grammar = ohm.grammar(`eightToTwentyNine {
-      start = single | double
-      single = "8" | "9"
-      double = "1" digit | "2" digit
-  }`);
+        start = single | double
+        single = "8" | "9"
+        double = "1" digit | "2" digit
+    }`);
   return grammar.match(s).succeeded();
 }
 
@@ -75,6 +62,33 @@ function isNotThreeEndingInOO(s) {
   return grammar.match(s).succeeded();
 }
 
+function isDivisibleBy64(s) {
+  const grammar = ohm.grammar(`divBy64 {
+        bin = numbers
+              | zeroes
+        zeroes = "0" zeroes --many_zeroes
+                | "0"
+        numbers = "1" "0" "0" "0" "0" "0" "0" --ending
+              | "0" numbers --preceding_zero
+              | "1" numbers --preceding_one
+    }`);
+  return grammar.match(s).succeeded();
+}
+
+function isNotDogDoorDenNoLookAround(s) {
+  const grammar = ohm.grammar(`isNotDogDoorDenNoLookAround {
+    string = (~"d") (letter*) -- doesNotBeginWithD
+    | "d"(~("o"|"e"))letter* --doesntBeginWithdoOrde
+    | "de"(~"n")(letter*) --doesntBeginWithden
+    | "den" (letter+) --includesden
+    | "do"(~("o"|"g"))letter* --doesntBeginWithdog
+    | "dog" (letter+) --includesdog
+    | "doo"(~"r")(letter*) --doesntBeginWith
+    | "door" (letter+) --doesntBeginWithDoor
+}`);
+  return grammar.match(s).succeeded();
+}
+
 module.exports = {
   isCanadianPostalCode,
   isVisa,
@@ -82,5 +96,6 @@ module.exports = {
   isDivisibleBy64,
   isEightThroughTwentyNine,
   isMLComment,
-  isNotThreeEndingInOO
+  isNotThreeEndingInOO,
+  isNotDogDoorDenNoLookAround
 };
