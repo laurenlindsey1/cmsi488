@@ -89,6 +89,13 @@ function isNotDogDoorDenNoLookAround(s) {
   return grammar.match(s).succeeded();
 }
 
+function isNotDogDoorDenWithLookAround(s) {
+  const grammar = ohm.grammar(`isNotDogDoorDenWithLookAround {
+      string = (~(("dog"end) | ("den"end) | ("door"end)))letter*
+  }`);
+  return grammar.match(s).succeeded();
+}
+
 module.exports = {
   isCanadianPostalCode,
   isVisa,
@@ -97,5 +104,6 @@ module.exports = {
   isEightThroughTwentyNine,
   isMLComment,
   isNotThreeEndingInOO,
-  isNotDogDoorDenNoLookAround
+  isNotDogDoorDenNoLookAround,
+  isNotDogDoorDenWithLookAround
 };
