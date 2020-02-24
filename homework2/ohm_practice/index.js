@@ -11,8 +11,7 @@ function isCanadianPostalCode(s) {
 
 function isVisa(s) {
   const grammar = ohm.grammar(`isVisa {
-        c = "4" d d d d d d d d d d d d d d d --fifteen
-        | "4" d d d d d d d d d d d d --twelve
+        c = "4" d d d d d d d d d d d d (d d d)?
         d = digit
     }`);
   return grammar.match(s).succeeded();
