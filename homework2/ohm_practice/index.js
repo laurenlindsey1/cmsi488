@@ -96,6 +96,19 @@ function isNotDogDoorDenWithLookAround(s) {
   return grammar.match(s).succeeded();
 }
 
+function isAdaFloat(s) {
+    const grammar = ohm.grammar(`isAdaFloat {
+        number = numeral (basedliteral | decimalliteral)
+        basedliteral = "#" basednumeral+ ("." basednumeral)? "#" exponent?
+        basednumeral = extendeddigit ("_" extendeddigit+)*
+        decimalliteral = ("." numeral)? exponent?
+        numeral = digit+ ("_" digit+)*
+        exponent = caseInsensitive<"e"> ("-" | "+"?) numeral
+        extendeddigit = digit | caseInsensitive<"a"> | caseInsensitive<"b"> | caseInsensitive<"c"> | caseInsensitive<"d"> | caseInsensitive<"e"> | caseInsensitive<"f">
+}`)
+return grammar.match(s).succeeded();
+}
+
 module.exports = {
   isCanadianPostalCode,
   isVisa,
@@ -105,5 +118,6 @@ module.exports = {
   isMLComment,
   isNotThreeEndingInOO,
   isNotDogDoorDenNoLookAround,
-  isNotDogDoorDenWithLookAround
+  isNotDogDoorDenWithLookAround,
+  isAdaFloat
 };
