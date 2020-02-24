@@ -52,9 +52,10 @@ function isMLComment(s) {
 function isNotThreeEndingInOO(s) {
   const grammar = ohm.grammar(`notThreeEndingInOO {
         string =  (morethanthree | threeletters | lessthanthree)?
-        morethanthree = letter letter letter letter letter*
-        lessthanthree = letter? letter?
-        threeletters = letter ~lettero letter letter
+        latinLetters = "a".."z"|"A".."Z"
+        morethanthree = latinLetters latinLetters latinLetters latinLetters latinLetters*
+        lessthanthree = latinLetters? latinLetters?
+        threeletters = latinLetters ~lettero latinLetters latinLetters
         lettero = caseInsensitive<"oo">
         
 }`);
@@ -76,27 +77,32 @@ function isDivisibleBy64(s) {
 
 function isNotDogDoorDenNoLookAround(s) {
   const grammar = ohm.grammar(`isNotDogDoorDenNoLookAround {
-    string = (~"d") (letter*) -- doesNotBeginWithD
-    | "d"(~("o"|"e"))letter* --doesntBeginWithdoOrde
-    | "de"(~"n")(letter*) --doesntBeginWithden
-    | "den" (letter+) --includesden
-    | "do"(~("o"|"g"))letter* --doesntBeginWithdog
-    | "dog" (letter+) --includesdog
-    | "doo"(~"r")(letter*) --doesntBeginWith
-    | "door" (letter+) --doesntBeginWithDoor
-}`);
+    string = (~"d") (latinLetters*) -- doesNotBeginWithD
+    | "d"(~("o"|"e"))latinLetters* --doesntBeginWithdoOrde
+    | "de"(~"n")(latinLetters*) --doesntBeginWithden
+    | "den" (latinLetters+) --includesden
+    | "do"(~("o"|"g"))latinLetters* --doesntBeginWithdog
+    | "dog" (latinLetters+) --includesdog
+    | "doo"(~"r")(latinLetters*) --doesntBeginWith
+    | "door" (latinLetters+) --doesntBeginWithDoor
+    latinLetters = "a".."z"|"A".."Z"
+  }`);
   return grammar.match(s).succeeded();
 }
 
+// CHANGE SO NON-LATIN LETTERS ARENT ACCEPTED CUZ LETTER IS
+//FOR ALL UNICODE
+// "A".."Z"
 function isNotDogDoorDenWithLookAround(s) {
   const grammar = ohm.grammar(`isNotDogDoorDenWithLookAround {
-      string = (~(("dog"end) | ("den"end) | ("door"end)))letter*
+      string = (~(("dog"end) | ("den"end) | ("door"end)))latinLetters*
+      latinLetters = "a".."z"|"A".."Z"
   }`);
   return grammar.match(s).succeeded();
 }
 
 function isAdaFloat(s) {
-    const grammar = ohm.grammar(`isAdaFloat {
+  const grammar = ohm.grammar(`isAdaFloat {
         number = numeral (basedliteral | decimalliteral)
         basedliteral = "#" basednumeral+ ("." basednumeral)? "#" exponent?
         basednumeral = extendeddigit ("_" extendeddigit+)*
@@ -104,8 +110,8 @@ function isAdaFloat(s) {
         numeral = digit+ ("_" digit+)*
         exponent = caseInsensitive<"e"> ("-" | "+"?) numeral
         extendeddigit = digit | caseInsensitive<"a"> | caseInsensitive<"b"> | caseInsensitive<"c"> | caseInsensitive<"d"> | caseInsensitive<"e"> | caseInsensitive<"f">
-}`)
-return grammar.match(s).succeeded();
+}`);
+  return grammar.match(s).succeeded();
 }
 
 module.exports = {
