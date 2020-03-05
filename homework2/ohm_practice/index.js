@@ -17,7 +17,6 @@ function isVisa(s) {
   return grammar.match(s).succeeded();
 }
 
-//FIX
 function isMasterCard(s) {
   const grammar = ohm.grammar(`isMastercard {
         card = "5" "1".."5" d d d12     --fives
@@ -90,9 +89,6 @@ function isNotDogDoorDenNoLookAround(s) {
   return grammar.match(s).succeeded();
 }
 
-// CHANGE SO NON-LATIN LETTERS ARENT ACCEPTED CUZ LETTER IS
-//FOR ALL UNICODE
-// "A".."Z"
 function isNotDogDoorDenWithLookAround(s) {
   const grammar = ohm.grammar(`isNotDogDoorDenWithLookAround {
       string = (~(("dog"end) | ("den"end) | ("door"end)))latinLetters*
