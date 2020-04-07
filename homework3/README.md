@@ -3,10 +3,12 @@
 ### 1. Classify the following as a syntax error, semantic error, or not a compile time error. In the case where code is given, assume all identifiers are properly declared and in scope. All items refer to the Java language.
 
 #### a. x+++-y
+Syntax error 
 
 Not a compile time error
 
 #### b. x---+y
+Syntax error
 
 Not a compile time error
 
@@ -23,20 +25,23 @@ Semantic error
 Semantic error
 
 #### f. Dereferencing a null reference
+not a compile time error
 
 Not a compile time error
 
 #### g. null instanceof C
+not a compile time error 
 
 #### h. !!x
+Syntax error
 
 Not a compile time error
 
 ### 2. State scope rules that would have caused them:
 
-#### a. 3
+#### a. 3,  5
+outer variables accessible in inner scope, until a diff variable is declared in the same scope
 
-#### a. 5
 
 Scope is whole block (like JavaScript let or const), or the whole function (like JavaScript var)
 
