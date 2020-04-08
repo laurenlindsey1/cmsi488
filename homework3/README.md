@@ -67,3 +67,5 @@ GET THIS SHIT FROM ACCESSING IT BEFORE YOU DECLARE IT + 2 WHICH GETS YOU THE SEC
 JAVA VERSION CANT REDECLARE A VARIABLE DECLARED EARLIER IN THE SCOPE
 
 ### 3. Describe the semantics of private in Ruby and C#. (Hint: they’re quite different.)
+In Ruby, the keyword private can only be applied to classes and members cannot be private.
+In C#, the keyword private can only be applied to members and classes cannot be private.
