@@ -66,6 +66,57 @@ GET THIS SHIT FROM ACCESSING IT BEFORE YOU DECLARE IT + 2 WHICH GETS YOU THE SEC
 
 JAVA VERSION CANT REDECLARE A VARIABLE DECLARED EARLIER IN THE SCOPE
 
-### 3. Describe the semantics of private in Ruby and C#. (Hint: they’re quite different.)
-In Ruby, the keyword private can only be applied to classes and members cannot be private.
-In C#, the keyword private can only be applied to members and classes cannot be private.
+### 3. Describe the semantics of `private` in Ruby and C#. 
+Generally speaking, in C#, `private` pertains to and entire class and all of the instances of that class, where in Ruby, `private` only refers to the object. One could say that `private` in C# is class-based, where `private` in Ruby is object-based.
+
+Below is an example of using `private` in C#:
+
+```C#
+using System;
+
+public class C
+{
+    private int x;
+    
+    public C(int x) 
+    { 
+        this.x = x;
+    } 
+    public void display(C c)
+    {
+        Console.WriteLine("x is: " + c.x);
+    }
+    public static void Main(String[] args) 
+    { 
+        C c1 = new C(3);
+        c1.display(c1); //output 3
+        C c2 = new C(5); 
+        c2.display(c2); //output 5
+        c2.display(c1); //output 3
+    } 
+}
+```
+
+Notice that class C takes in a `private` integer x, and there are two instances of class C, c1 and c2. In C#, you are able to call a method on c2, but pass in c1 as a parameter; thus returning the `private` x value of c1. In C#, the boundary of `private` pertains to the class, since instance of a class are able to access other `private` variables in other instances of the same class. C# is `private` to the class, and not to the specific object. 
+
+If you were to attempt something similar in Ruby, you would not be able to. Ruby is `private` to objects, so being in the same class does not mean instances can access other instances `private` variables. 
+
+Below is an example of using `private` in Ruby:
+``` Ruby
+class C  
+  def initialize(x)  
+    @x = x  
+  end  
+  
+  def function  
+    puts "the value of x is #{@x} "  
+  end  
+end  
+
+c1 = C.new('3') 
+c1.function # output 3
+c2 = C.new('5')  
+c2.function # output 5
+```
+
+Ruby has what is known as recievers, or the object on which the method is called. Since functions in Ruby do not take in parameters, the program can only call a function on the object, and cannot mimic behavior in C#, where another instance of a class can call a method and pass in a different instance of a class. 
