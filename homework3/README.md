@@ -27,44 +27,42 @@ Semantic error
 Not a compile time error
 
 #### g. null instanceof C
+Not a compile time error
 
 #### h. !!x
 
 Not a compile time error
 
 ### 2. State scope rules that would have caused them:
+```JavaScript
+var x = 3;          // line 1
+function f() {      // line 2
+  print(x);         // line 3
+  var x = x + 2;    // line 4
+  print(x);         // line 5
+}                   // line 6
+f();                // line 7
+```
 
-#### a. 3
+#### a.  3  5
+This would happen when the scope begins after the line of code declaring it has completed. When printing on line 3, since line 4 appears after, the outer scope (nonlocal value) of x is used, 3.  After line 4 finishes, the inner x value, 5,  is now used in the print statement on line 5. 
 
-#### a. 5
+#### b. `undefined` `NaN`
+Something like this could happen when the scope of the x declaration on line 3 is the function in which it is declared. Thus, when entering new function f, x becomes `undefined` since the program cannot "see" the declaration outside of the function. Then, on line 4, the program is attempting to add 2 to `undefined`, which will result in `NaN` when printed on line 6. This is an example of scope similar to JavaScript `var`.
 
-Scope is whole block (like JavaScript let or const), or the whole function (like JavaScript var)
+#### c. `Error on line 3: x is not declared`
+This is an example of scope similar to that of JavaScript `let`. x on line 1 is declared in the outer scope, and once the function f begins, so does the Temporal Dead Zone. Thus, attempting to access x on line 3 will throw the error that x cannot be accessed since it has not been initialized nor declared. 
 
-#### b. undefined NaN
+#### d. 75354253672  75354253674
+As usual, the declaration on line 1 is the outer x scope, and function f uses the inner x declared on line 4. When getting printed on line 3, x is bound to its memory address, but since there is no declaration by line 3, garbage (75354253672) is printed out, and stored as x. On line 4, x now becomes whatever the garbage printed + 2 (75354253672 + 2 = 75354253674).
 
-???
-MIGHT BE ADDING UNDEFINED/NAN TO 2 AND THAT BLOWS UP? WHATS THE SCOPE THEN maybe function scope? (ada or lua)?
+#### e. 3  -23482937128
 
-#### c. Error on line 3: x is not declared
+This is an example of the scope starting at the point of declaration, but does not wait for the declaration to be finished. On line 3, the x printed out is still the x from the outer scope on line 1, since no other x has been declared inside of the function. Because of the declaration not needing to be complete in scoping, the identifier can be used right away. In line 4: `var x = x + 2;`, the x in `var x` is the x that is going to be used in the declaration. Since that inner x has not been declared, it contains garbage. Thus the inner x value is whatever garbage + 2. The print statement on line 5 then refers to the inner x declared on line 4.
 
-The scope of the local x is the whole function body!
+#### f. `Error on line 4: x used in its own declaration`
 
-#### d. 75354253672
-
-#### d. 75354253674
-
-ADDRESS? DON’T KNOW IF IT WOULD BE SCOPE
-GET THIS SHIT FROM ACCESSING IT BEFORE YOU DECLARE IT + 2 WHICH GETS YOU THE SECOND LINE FUNCTION BODY WOULD BE THE SCOPE C/C++ FOR ADDRESSING
-
-#### e. 3
-
-#### e. -23482937128
-
-3 IS OKAY BUT THE SECOND ONE IS REDECLARED? EXTENSION OF THAT CANT ACCESS BEFORE DECLARING IT
-
-#### f. Error on line 4: x used in its own declaration
-
-JAVA VERSION CANT REDECLARE A VARIABLE DECLARED EARLIER IN THE SCOPE
+For this, the scope rule can either be the whole function or the point of declaration, but the language and the compiler itself will not allow for a variable to be used in its own declaration. This code will not print anything out, since this error will cause program failure at compile time. 
 
 ### 3. Describe the semantics of `private` in Ruby and C#. 
 Generally speaking, in C#, `private` pertains to and entire class and all of the instances of that class, where in Ruby, `private` only refers to the object. One could say that `private` in C# is class-based, where `private` in Ruby is object-based.
